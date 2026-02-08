@@ -44,3 +44,8 @@ saved_model/
 # --- 7. LOGS & SYSTEM ---
 *.log
 .DS_Store
+
+## -- 8. Node Modules --
+node_modules/
+.env
+dist/
