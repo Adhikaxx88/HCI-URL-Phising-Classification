@@ -1,14 +1,14 @@
 import os
-# Matikan GPU agar stabil di lokal & siap buat Vercel/Render
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
 
-import joblib
 import tensorflow as tf
 from tensorflow.keras.models import load_model
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+# GANTI INI: Pakai library langsung, jangan joblib load model ST
+from sentence_transformers import SentenceTransformer
 
 app = FastAPI(title="Phishing Detection API v3.0")
 
@@ -24,28 +24,36 @@ class URLRequest(BaseModel):
     url: str
 
 # --- LOAD COMPONENTS ---
-print("⏳ Memuat Processor (.pkl) dan Model (.h5)...")
+print("⏳ Memuat Model (.h5) dan Sentence Transformer...")
 
-# Path relatif dari lokasi app.py
 MODEL_PATH = 'models/phishing_detection_deeplearning.h5'
-PROCESSOR_PATH = 'models/url_processor.pkl'
 
 model = None
 processor = None
 
 try:
-    if os.path.exists(MODEL_PATH) and os.path.exists(PROCESSOR_PATH):
+    # 1. Load Model Keras
+    if os.path.exists(MODEL_PATH):
         model = load_model(MODEL_PATH)
-        processor = joblib.load(PROCESSOR_PATH)
-        print("SEMUA SISTEM GO! Model dan Processor siap.")
+        print("✅ Model Keras (.h5) siap.")
     else:
-        print("ERROR: Salah satu file model/processor ilang!")
+        print("❌ ERROR: File model (.h5) ilang!")
+
+    # 2. Load Sentence Transformer (Ganti 'nama-model' sesuai yang lu pake pas training)
+    # Contoh: 'all-MiniLM-L6-v2' atau 'paraphrase-multilingual-MiniLM-L12-v2'
+    # Server bakal otomatis download/cache model ini, gak perlu file .pkl 90MB lagi!
+    print("⏳ Menghubungkan ke Sentence Transformer...")
+    processor = SentenceTransformer('all-MiniLM-L6-v2') 
+    print("✅ Sentence Transformer siap.")
+    
+    print("🚀 SEMUA SISTEM GO!")
+
 except Exception as e:
-    print(f"Gagal load: {str(e)}")
+    print(f"❌ Gagal load: {str(e)}")
 
 @app.get("/")
 def home():
-    return {"status": "Ready", "model_loaded": model is not None}
+    return {"status": "Ready", "model_loaded": model is not None, "processor_loaded": processor is not None}
 
 @app.post("/predict")
 def predict(request: URLRequest):
@@ -53,8 +61,8 @@ def predict(request: URLRequest):
         raise HTTPException(status_code=503, detail="Sistem belum siap.")
 
     try:
-
-        data_vector = processor.transform([request.url])
+        # Sentence Transformer pakai .encode(), bukan .transform()
+        data_vector = processor.encode([request.url])
 
         prediction = model.predict(data_vector)[0][0]
         
@@ -69,4 +77,3 @@ def predict(request: URLRequest):
         }
     except Exception as e:
         return {"error": str(e)}
-
