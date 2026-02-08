@@ -61,18 +61,24 @@ def predict(request: URLRequest):
         raise HTTPException(status_code=503, detail="Sistem belum siap.")
 
     try:
-        # Sentence Transformer pakai .encode(), bukan .transform()
         data_vector = processor.encode([request.url])
-
-        prediction = model.predict(data_vector)[0][0]
+        prediction = float(model.predict(data_vector)[0][0])
         
-        is_phishing = prediction > 0.5
-        confidence = float(prediction) if is_phishing else 1 - float(prediction)
+        # Berdasarkan dataset lu: 0 = Phishing, 1 = Legitimate
+        # Nilai 'prediction' (0-1) itu sendiri adalah skor Legitimate
+        prob_legitimate = prediction
+        prob_phishing = 1 - prediction
+        
+        is_phishing = prob_phishing > 0.5 
         
         return {
             "url": request.url,
-            "status": "PHISHING" if is_phishing else "AMAN",
-            "confidence": f"{confidence * 100:.2f}%",
+            "status": "PHISHING" if is_phishing else "LEGITIMATE",
+            "confidence": f"{(prob_phishing if is_phishing else prob_legitimate) * 100:.2f}%",
+            "details": {
+                "phishing_chance": f"{prob_phishing * 100:.2f}%",
+                "legitimate_chance": f"{prob_legitimate * 100:.2f}%"
+            },
             "is_dangerous": bool(is_phishing)
         }
     except Exception as e:
