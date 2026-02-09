@@ -49,3 +49,7 @@ saved_model/
 node_modules/
 .env
 dist/
+
+echo "node_modules/" > .gitignore
+echo "dist/" >> .gitignore
+echo ".env" >> .gitignoreg

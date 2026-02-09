@@ -64,8 +64,7 @@ def predict(request: URLRequest):
         data_vector = processor.encode([request.url])
         prediction = float(model.predict(data_vector)[0][0])
         
-        # Berdasarkan dataset lu: 0 = Phishing, 1 = Legitimate
-        # Nilai 'prediction' (0-1) itu sendiri adalah skor Legitimate
+        # 0 = Phishing, 1 = Legitimate
         prob_legitimate = prediction
         prob_phishing = 1 - prediction
         
@@ -73,12 +72,9 @@ def predict(request: URLRequest):
         
         return {
             "url": request.url,
-            "status": "PHISHING" if is_phishing else "LEGITIMATE",
-            "confidence": f"{(prob_phishing if is_phishing else prob_legitimate) * 100:.2f}%",
-            "details": {
-                "phishing_chance": f"{prob_phishing * 100:.2f}%",
-                "legitimate_chance": f"{prob_legitimate * 100:.2f}%"
-            },
+            "label": "PHISHING" if is_phishing else "LEGITIMATE",
+            "confidence": (prob_phishing if is_phishing else prob_legitimate) * 100,
+            "legitimate_chance": prob_legitimate * 100,
             "is_dangerous": bool(is_phishing)
         }
     except Exception as e:
