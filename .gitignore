@@ -1,55 +1,42 @@
 # --- 1. SAMPAH PYTHON (Wajib) ---
-# Ini file otomatis yg dibuat python, gak guna buat temen lu.
 __pycache__/
 *.py[cod]
 *$py.class
+.pytest_cache/
 
-# --- 2. ENVIRONMENT (PENTING BANGET!) ---
-# Jangan sampe folder env Anaconda lu ke-upload. Berat bergiga-giga!
+# --- 2. ENVIRONMENT (PENTING!) ---
+# Biar folder environment Conda/venv lu gak ke-upload
 env/
 venv/
 .env
 .venv/
 anaconda3/
 
-# --- 3. DATASET ---
-# GitHub punya limit size. Data CSV/Excel mending share via Google Drive.
+# --- 3. DATASET & JSON ---
+# Hapus *.json biar package.json gak keblokir
 data/
-*.csv
+#*.csv
 *.xlsx
-*.json
 *.zip
 *.tar.gz
 
 # --- 4. MODEL MACHINE LEARNING ---
-# File model (.h5 atau .pkl) bisa ratusan MB.
-# Kalau mau upload model, pastiin sizenya <100MB atau pakai Git LFS.
-# Untuk aman, kita ignore dulu foldernya.
-models/
-*.h5
-*.pkl
-*.joblib
-*.pb
-saved_model/
+# Karena model lu kecil (<50MB), baris ini kita matikan biar bisa ke-push
+# models/
+# *.h5
+# *.pkl
 
-# --- 5. JUPYTER NOTEBOOK SAMPAH ---
-# Ini folder autosave yg sering bikin konflik git.
+# --- 5. JUPYTER NOTEBOOK ---
 .ipynb_checkpoints/
 
-# --- 6. SETTINGAN EDITOR ---
-# Settingan VS Code lu biarlah jadi rahasia lu.
+# --- 6. NODE & FRONTEND (Wajib) ---
+# Biar repo lu gak berat sama library React
+node_modules/
+dist/
+.env.local
+
+# --- 7. SETTINGAN EDITOR ---
 .vscode/
 .idea/
-
-# --- 7. LOGS & SYSTEM ---
 *.log
 .DS_Store
-
-## -- 8. Node Modules --
-node_modules/
-.env
-dist/
-
-echo "node_modules/" > .gitignore
-echo "dist/" >> .gitignore
-echo ".env" >> .gitignoreg
