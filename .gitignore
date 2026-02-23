@@ -14,7 +14,7 @@ anaconda3/
 
 # --- 3. DATASET & JSON ---
 # Hapus *.json biar package.json gak keblokir
-data/
+# data/
 #*.csv
 *.xlsx
 *.zip
