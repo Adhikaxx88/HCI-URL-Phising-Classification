@@ -1,43 +1,36 @@
-Phishing URL Detection System
-This project is a deep learning-based application designed to classify URLs as either Legitimate or Phishing. It features a FastAPI backend for real-time inference and a modern frontend for a user-friendly experience.
+# 🛡️ Phishing URL Detection System
 
-🚀 Key Features
-Deep Learning Inference: Uses a pre-trained Keras model (.h5) for high-accuracy classification.
+A high-performance, deep learning-based application designed to identify and classify phishing URLs. This project is fully containerized and optimized for CPU-only environments to ensure a lightweight and fast deployment process on machines like the MSI Katana.
 
-Efficient Embeddings: Implements sentence-transformers (all-MiniLM-L6-v2) to convert URLs into meaningful vector representations.
+## ✨ Key Features
+* **Deep Learning Engine**: Utilizes a Keras `.h5` model for precise URL classification.
+* **Intelligent Embeddings**: Implements `all-MiniLM-L6-v2` via `sentence-transformers` for robust text vectorization.
+* **Dockerized Architecture**: Orchestrated with Docker Compose for seamless backend and frontend integration.
+* **CPU Optimized**: Specially configured with `torch+cpu` and `tensorflow-cpu` to skip heavy GPU libraries, significantly reducing build time and image size.
 
-CPU Optimized: The environment is strictly optimized for CPU usage, ensuring fast builds and low resource consumption without requiring a GPU.
+## 🛠️ Tech Stack
+* **Backend**: FastAPI, TensorFlow CPU, PyTorch CPU, Uvicorn.
+* **Frontend**: React, Vite.
+* **Data Science**: Scikit-learn, Numpy, Pandas.
 
-Dockerized Architecture: Fully containerized using Docker Compose for seamless deployment.
+## 🚀 Activation Guide
 
-🛠️ Tech Stack
-Backend: FastAPI, TensorFlow (CPU-version), PyTorch (CPU-version), Uvicorn.
+Follow these steps to get the system running on your local machine:
 
-Frontend: React, Vite.
-
-Inference Engine: Sentence-Transformers, Scikit-learn.
-
-📦 Getting Started
-Prerequisites
-Docker and Docker Compose installed on your machine.
-
-Activation Steps
-To activate the containers and run the project, follow these steps:
-
-Clone the repository:
-
-Bash
-git clone https://github.com/Adhikaxx88/url-classification.git
+### 1. Clone the Repository
+```bash
+git clone [https://github.com/Adhikaxx88/url-classification.git](https://github.com/Adhikaxx88/url-classification.git)
 cd url-classification
-Build and Start the containers:
-Use Docker Compose to build the images and start the services:
-
-Bash
+```
+### 2. Docker compose
+```bash
 docker-compose up --build
-Access the Application:
+```
+### 3. Access the Application
+Once the logs show SEMUA SISTEM GO!, you can access the services at:
 
-Frontend: Open http://localhost:5173 in your browser.
+Frontend Dashboard: http://localhost:5173
 
-Backend API: Access the API directly at http://localhost:8000.
+API Endpoint: http://localhost:8000
 
-Interactive API Docs: Explore the Swagger UI at http://localhost:8000/docs.
+API Documentation (Swagger): http://localhost:8000/docs
