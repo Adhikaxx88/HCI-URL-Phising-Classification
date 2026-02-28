@@ -24,7 +24,7 @@ class URLRequest(BaseModel):
     url: str
 
 # --- LOAD COMPONENTS ---
-print("⏳ Memuat Model (.h5) dan Sentence Transformer...")
+print(" Memuat Model (.h5) dan Sentence Transformer...")
 
 MODEL_PATH = 'models/phishing_detection_deeplearning.h5'
 
@@ -35,18 +35,18 @@ try:
 
     if os.path.exists(MODEL_PATH):
         model = load_model(MODEL_PATH)
-        print("✅ Model Keras (.h5) siap.")
+        print(" Model Keras (.h5) siap.")
     else:
-        print("❌ ERROR: File model (.h5) ilang!")
+        print(" ERROR: File model (.h5) ilang!")
 
-    print("⏳ Menghubungkan ke Sentence Transformer...")
+    print(" Menghubungkan ke Sentence Transformer...")
     processor = SentenceTransformer('all-MiniLM-L6-v2') 
-    print("✅ Sentence Transformer siap.")
+    print("Sentence Transformer siap.")
     
-    print("🚀 SEMUA SISTEM GO!")
+    print(" SEMUA SISTEM GO!")
 
 except Exception as e:
-    print(f"❌ Gagal load: {str(e)}")
+    print(f" Gagal load: {str(e)}")
 
 @app.get("/")
 def home():
