@@ -208,18 +208,38 @@ export function AboutUs() {
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
               <CollaboratorCard
                 name="Nehemiah Gantenk Abiez"
-                role="Lead Developer & AI Engineer"
-                description="Deep learning model architecture, frontend engineering & system design."
+                role="Nehemiah Wilhelmus Junaidi 2802409874"
+                description="Mahasiswa Bina Nusantara Data Science IP 4.1"
               />
               <CollaboratorCard
-                name="Collaborator 2"
-                role="TBA"
-                description="TBA"
+                name="Adhikaxx88"
+                role="Adhika Gunawan 2802438205"
+                description=""
               />
               <CollaboratorCard
-                name="Collaborator 3"
-                role="TBA"
-                description="TBA"
+                name="Alvin"
+                role="Alvin Wijaya 2802393062"
+                description=""
+              />
+              <CollaboratorCard
+                name="Felix"
+                role="Felix Yung 2802394462"
+                description=""
+              />
+              <CollaboratorCard
+                name="Daniel"
+                role="Daniel Sebastian Winata 2802392652"
+                description=""
+              />
+              <CollaboratorCard
+                name="Andrewyungg"
+                role="Andrew Yung 2802394424"
+                description=""
+              />
+              <CollaboratorCard
+                name="Tokesi"
+                role="Tokesi Lukynawa 2802394525"
+                description=""
               />
             </div>
 

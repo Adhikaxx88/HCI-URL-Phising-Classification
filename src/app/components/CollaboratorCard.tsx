@@ -99,7 +99,7 @@ export function CollaboratorCard({
       </div>
 
       {/* Description */}
-      {description && (
+      {description && description.length > 0 && (
         <p
           style={{
             color: "rgba(224,224,224,0.5)",
