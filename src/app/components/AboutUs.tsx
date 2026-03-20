@@ -209,37 +209,37 @@ export function AboutUs() {
               <CollaboratorCard
                 name="Nehemiah Gantenk Abiez"
                 role="Nehemiah Wilhelmus Junaidi 2802409874"
-                description="Mahasiswa Bina Nusantara Data Science IP 4.1"
+                description="Frontend Developer - Crafted the sleek UI and seamless user experience of our phishing detection system, making security accessible to all."
               />
               <CollaboratorCard
                 name="Adhikaxx88"
                 role="Adhika Gunawan 2802438205"
-                description=""
+                description="Backend Developer and AI Engineer - Developed the core deep learning model and backend infrastructure that powers our real-time phishing detection system, ensuring fast and accurate analysis of URLs."
               />
               <CollaboratorCard
                 name="Alvin"
                 role="Alvin Wijaya 2802393062"
-                description=""
+                description="UI/UX Designer - Designed the intuitive and visually striking interface for our phishing detection system, creating a user-friendly experience that makes online security accessible to everyone."
               />
               <CollaboratorCard
                 name="Felix"
                 role="Felix Yung 2802394462"
-                description=""
+                description="Frontend Developer - Implemented the responsive and engaging user interface for our phishing detection system, ensuring a seamless experience across devices while maintaining a strong focus on usability and aesthetics."
               />
               <CollaboratorCard
                 name="Daniel"
                 role="Daniel Sebastian Winata 2802392652"
-                description=""
+                description="UI/UX Designer - Crafted the user interface and experience for our phishing detection system, focusing on creating an intuitive and visually appealing design that empowers users to stay safe online with ease."
               />
               <CollaboratorCard
                 name="Andrewyungg"
                 role="Andrew Yung 2802394424"
-                description=""
+                description="Frontend Developer - Developed the dynamic and user-friendly interface for our phishing detection system, ensuring that users can easily navigate and utilize the tool to protect themselves from online threats."
               />
               <CollaboratorCard
                 name="Tokesi"
                 role="Tokesi Lukynawa 2802394525"
-                description=""
+                description="UI/UX Designer - Designed the user interface and experience for our phishing detection system, creating an intuitive and visually appealing design that empowers users to stay safe online with ease."
               />
             </div>
 
