@@ -15,14 +15,14 @@ export function Layout() {
 
   return (
     <div
-      style={{
-        display: "flex",
-        minHeight: "100vh",
-        background: "#0a0f0f",
-        color: "#e0e0e0",
-        position: "relative",
-        overflow: "hidden",
-      }}
+    style={{
+    display: "flex",
+    height: "100vh", // Paksa tinggi pas seukuran layar
+    background: "#0a0f0f",
+    color: "#e0e0e0",
+    position: "relative",
+    overflow: "hidden", // Ini buat ngunci background biar gak berantakan
+  }}
     >
       {/* Custom cursor */}
       <CustomCursor />
