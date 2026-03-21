@@ -91,7 +91,7 @@ export function LinkPredictor({ initialUrl = "" }: { initialUrl?: string }) {
     setTimeout(() => addLog("Post-processing..."), 3600);
     setTimeout(() => addLog("Finalizing..."), 4400);
     try {
-      const res = await fetch("http://127.0.0.1:8000/predict", {
+      const res = await fetch("https://adhikaxx88-phishing-detection-api.hf.space/predict", {
         method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ url }),
       });
       if (!res.ok) throw new Error("Backend error");
