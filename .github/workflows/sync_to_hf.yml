@@ -18,7 +18,7 @@ jobs:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
           # 1. Kasih tau git siapa lu (biar gak error)
-          git config --global user.email "adhikagunawan88@gmail.com"
+          git config --global user.email "haowen88yt@gmail.com"
           git config --global user.name "Adhikaxx88"
           
           # 2. Perintah buat "Memaksa" folder backend masuk ke HF
