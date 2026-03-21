@@ -17,7 +17,9 @@ jobs:
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          git lfs install
+          
           git config --global user.email "haowen88yt@gmail.com"
           git config --global user.name "Adhikaxx88"
+          git lfs install
+          git lfs pull
           git push https://adhikaxx88:$HF_TOKEN@huggingface.co/spaces/adhikaxx88/phishing-detection-api $(git subtree split --prefix backend main):main --force
