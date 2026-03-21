@@ -17,4 +17,10 @@ jobs:
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          git subtree push --prefix backend https://Adhikaxx88:$HF_TOKEN@huggingface.co/spaces/adhikaxx88/phishing-detection-api main
+          # 1. Kasih tau git siapa lu (biar gak error)
+          git config --global user.email "adhikagunawan88@gmail.com"
+          git config --global user.name "Adhikaxx88"
+          
+          # 2. Perintah buat "Memaksa" folder backend masuk ke HF
+          # Pastiin nama space 'phishing-detection-api' huruf kecil semua sesuai URL HF
+          git push https://adhikaxx88:$HF_TOKEN@huggingface.co/spaces/adhikaxx88/phishing-detection-api $(git subtree split --prefix backend main):main --force
