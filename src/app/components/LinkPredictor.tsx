@@ -80,6 +80,11 @@ export function LinkPredictor({ initialUrl = "" }: { initialUrl?: string }) {
 
   const handleAnalyze = async () => {
     if (!url.trim()) return alert("Masukkan URL dulu");
+    if (!navigator.onLine) {
+      addLog("ERROR: No internet connection");
+      setToast("Offline — tidak bisa menganalisis URL");
+      return;
+    }
     setPulseKey((k) => k + 1);
     setIsAnalyzing(true); setProgress(0); setLabel(null); setAccuracy(null);
     setLegitProb(null); setDisplayLegit(100); setTerminalLogs([]); setShowTerminal(true);
