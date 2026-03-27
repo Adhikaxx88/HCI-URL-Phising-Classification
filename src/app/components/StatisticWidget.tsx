@@ -19,6 +19,7 @@ const COLORS = { PHISHING: "#ff3b3b", LEGITIMATE: "#00ff9d" };
 
 export function StatisticWidget({ history, onSelectUrl }: StatisticWidgetProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [dismissed, setDismissed] = useState<Set<number>>(new Set());
   const shouldReduceMotion = useReducedMotion();
   const total = history.length;
   const phishingCount = history.filter((r) => r.label === "PHISHING").length;
@@ -129,17 +130,21 @@ export function StatisticWidget({ history, onSelectUrl }: StatisticWidgetProps) 
           </p>
         ) : (
           <ul className="space-y-2">
-            {recent.map((r, i) => (
+            {recent.map((r, i) => dismissed.has(r.timestamp) ? null : (
               <motion.li
                 key={r.timestamp}
+                drag={shouldReduceMotion ? false : "x"}
+                dragConstraints={{ left: -200, right: 0 }}
+                onDragEnd={(_, info) => { if (info.offset.x < -80) setDismissed((prev) => new Set(prev).add(r.timestamp)); }}
                 initial={{ opacity: 0, x: shouldReduceMotion ? 0 : -8 }}
                 animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -120 }}
                 transition={{ delay: shouldReduceMotion ? 0 : i * 0.05, duration: shouldReduceMotion ? 0 : 0.2 }}
                 className="flex items-center gap-2 rounded-lg px-3 py-2"
                 style={{
                   background: hoveredIndex === i ? "rgba(0,255,157,0.06)" : "rgba(255,255,255,0.03)",
                   border: hoveredIndex === i ? "1px solid rgba(0,255,157,0.3)" : "1px solid rgba(255,255,255,0.06)",
-                  cursor: "pointer",
+                  cursor: "grab",
                 }}
                 onClick={() => { if (r.url) onSelectUrl?.(r.url); }}
                 onMouseEnter={() => setHoveredIndex(i)}

@@ -23,11 +23,14 @@ export function ToastNotification({ message, onDone, duration = 1500 }: ToastNot
         {message !== null && (
           <motion.div
             key="toast"
+            drag={shouldReduceMotion ? false : "x"}
+            dragConstraints={{ left: 0, right: 300 }}
+            onDragEnd={(_, info) => { if (info.offset.x > 100) onDone(); }}
             initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 8 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: shouldReduceMotion ? 0 : 8 }}
+            exit={{ opacity: 0, x: shouldReduceMotion ? 0 : 120 }}
             transition={{ duration: animDuration }}
-            style={{
+            style={{ cursor: "grab",
               background: "rgba(8,14,14,0.95)",
               border: "1px solid rgba(0,255,157,0.4)",
               borderRadius: 8,
