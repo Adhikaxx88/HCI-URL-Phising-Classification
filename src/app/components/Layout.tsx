@@ -76,7 +76,7 @@ export function Layout() {
           flexDirection: "column",
           background: "rgba(5,10,10,0.92)",
           backdropFilter: "blur(16px)",
-          borderRight: "1px solid rgba(0,255,157,0.18)",
+          borderRight: "1px solid var(--cyber-border-color)",
         }}
       >
         {/* Logo */}
@@ -92,10 +92,10 @@ export function Layout() {
                 boxShadow: "0 0 12px rgba(0,255,157,0.2)",
               }}
             >
-              <Shield style={{ width: 18, height: 18, color: "#00ff9d" }} />
+              <Shield style={{ width: 18, height: 18, color: "var(--cyber-accent)" }} />
             </div>
             <div>
-              <p style={{ fontSize: 13, fontWeight: 700, letterSpacing: "0.15em", color: "#00ff9d", textShadow: "0 0 10px #00ff9d", textTransform: "uppercase" }}>
+              <p style={{ fontSize: 13, fontWeight: 700, letterSpacing: "0.15em", color: "var(--cyber-accent)", textShadow: "0 0 10px var(--cyber-accent)", textTransform: "uppercase" }}>
                 PhishGuard
               </p>
               <p style={{ fontSize: 10, color: "rgba(224,224,224,0.35)", letterSpacing: "0.1em" }}>v3.0</p>
@@ -146,7 +146,6 @@ export function Layout() {
                       />
                     )}
                   </Link>
-                </li>
               );
             })}
           </ul>
@@ -163,7 +162,7 @@ export function Layout() {
                 key={i}
                 style={{
                   width: 6, height: 6, borderRadius: "50%",
-                  background: "#00ff9d", boxShadow: "0 0 6px #00ff9d",
+                  background: "var(--cyber-accent)", boxShadow: "var(--cyber-glow)",
                   animation: `pulse-dot 1.5s ease-in-out ${i * 0.3}s infinite`,
                   display: "inline-block",
                 }}

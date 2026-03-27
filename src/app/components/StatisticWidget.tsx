@@ -15,7 +15,7 @@ interface StatisticWidgetProps {
   onSelectUrl?: (url: string) => void;
 }
 
-const COLORS = { PHISHING: "#ff3b3b", LEGITIMATE: "#00ff9d" };
+const COLORS = { PHISHING: "var(--cyber-danger)", LEGITIMATE: "var(--cyber-accent)" };
 
 export function StatisticWidget({ history, onSelectUrl }: StatisticWidgetProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
@@ -39,9 +39,9 @@ export function StatisticWidget({ history, onSelectUrl }: StatisticWidgetProps) 
       {/* Stats row */}
       <div className="grid grid-cols-3 gap-3">
         {[
-          { label: "TOTAL", value: total, color: "#00ffff" },
-          { label: "PHISHING", value: phishingCount, color: "#ff3b3b" },
-          { label: "LEGIT", value: legitCount, color: "#00ff9d" },
+          { label: "TOTAL", value: total, color: "var(--cyber-accent-2)" },
+          { label: "PHISHING", value: phishingCount, color: "var(--cyber-danger)" },
+          { label: "LEGIT", value: legitCount, color: "var(--cyber-accent)" },
         ].map((s) => (
           <div
             key={s.label}

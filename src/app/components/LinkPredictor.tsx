@@ -163,8 +163,8 @@ export function LinkPredictor({ initialUrl = "" }: { initialUrl?: string }) {
 
   const isPhishing = label === "PHISHING";
   const hasResult = label !== null && accuracy !== null && legitProb !== null;
-  const btnSec: React.CSSProperties = { padding: "9px 16px", borderRadius: 8, background: "rgba(0,255,255,0.06)", border: "1px solid rgba(0,255,255,0.22)", color: "#00ffff", fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", gap: 6, textDecoration: "none" };
-  const btnIcon: React.CSSProperties = { padding: "10px 12px", borderRadius: 8, background: "rgba(0,255,157,0.07)", border: "1px solid rgba(0,255,157,0.22)", color: "#00ff9d", cursor: "pointer", display: "flex", alignItems: "center" };
+  const btnSec: React.CSSProperties = { padding: "9px 16px", borderRadius: 8, background: "rgba(0,255,255,0.06)", border: "1px solid rgba(0,255,255,0.22)", color: "var(--cyber-accent-2)", fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", gap: 6, textDecoration: "none" };
+  const btnIcon: React.CSSProperties = { padding: "10px 12px", borderRadius: 8, background: "rgba(0,255,157,0.07)", border: "1px solid rgba(0,255,157,0.22)", color: "var(--cyber-accent)", cursor: "pointer", display: "flex", alignItems: "center" };
 
   const analyzeBoxShadow = btnSuccess
     ? "0 0 20px #00ff9d, 0 0 40px rgba(0,255,157,0.4)"
