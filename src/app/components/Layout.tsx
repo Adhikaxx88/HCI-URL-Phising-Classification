@@ -1,9 +1,21 @@
 import { Link, Outlet, useLocation } from "react-router";
 import { Home, Info, Shield } from "lucide-react";
+import { lazy, Suspense } from "react";
 import { CyberParticles } from "./CyberParticles";
 import { ThreeScene } from "./ThreeScene";
 import { CustomCursor } from "./CustomCursor";
 import { motion, AnimatePresence } from "framer-motion";
+import { ThemeProvider } from "../context/ThemeContext";
+import { GamificationProvider } from "../context/GamificationContext";
+import { ScanProvider } from "../context/ScanContext";
+import { ScanlineOverlay } from "./hud/ScanlineOverlay";
+import { HUDSystem } from "./hud/HUDSystem";
+import { ConnectionStatus } from "./pwa/ConnectionStatus";
+import { TerminalModal } from "./terminal/TerminalModal";
+
+const ShaderBackground = lazy(() =>
+  import("./shader/ShaderBackground").then((m) => ({ default: m.ShaderBackground }))
+);
 
 export function Layout() {
   const location = useLocation();
@@ -14,18 +26,38 @@ export function Layout() {
   ];
 
   return (
+    <ThemeProvider>
+      <GamificationProvider>
+        <ScanProvider>
     <div
     style={{
     display: "flex",
-    height: "100vh", // Paksa tinggi pas seukuran layar
+    height: "100vh",
     background: "#0a0f0f",
     color: "#e0e0e0",
     position: "relative",
-    overflow: "hidden", // Ini buat ngunci background biar gak berantakan
+    overflow: "hidden",
   }}
     >
       {/* Custom cursor */}
       <CustomCursor />
+
+      {/* Shader background (lazy) */}
+      <Suspense fallback={null}>
+        <ShaderBackground />
+      </Suspense>
+
+      {/* Scanline overlay */}
+      <ScanlineOverlay />
+
+      {/* HUD system */}
+      <HUDSystem />
+
+      {/* Connection status */}
+      <ConnectionStatus />
+
+      {/* Terminal modal (Ctrl+K) */}
+      <TerminalModal />
 
       {/* Layer 0: particles (fixed, fullscreen) */}
       <CyberParticles />
@@ -180,5 +212,8 @@ export function Layout() {
         }
       `}</style>
     </div>
+        </ScanProvider>
+      </GamificationProvider>
+    </ThemeProvider>
   );
 }
