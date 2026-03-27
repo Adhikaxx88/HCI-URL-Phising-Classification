@@ -1,4 +1,4 @@
-﻿import { useState, useRef, useEffect } from "react";
+﻿import { useState, useRef, useEffect, lazy, Suspense } from "react";
 import { ClipboardPaste, Camera, Upload, X, ShieldAlert, ShieldCheck, Copy, ExternalLink, Terminal, ChevronDown, ChevronUp, Trash2 } from "lucide-react";
 import { Html5Qrcode } from "html5-qrcode";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
@@ -6,6 +6,15 @@ import { GlitchText } from "./GlitchText";
 import { MatrixProgress } from "./MatrixProgress";
 import { StatisticWidget, type PredictionRecord } from "./StatisticWidget";
 import { ToastNotification } from "./ToastNotification";
+import { ThreatMeter } from "./threat/ThreatMeter";
+import { VoiceButton, speakVerdict } from "./voice/VoiceButton";
+import { NeuralNetModal } from "./analysis/NeuralNetModal";
+import { useScanContext } from "../context/ScanContext";
+import { useGamification } from "../context/GamificationContext";
+
+const ThreatGlobe = lazy(() =>
+  import("./globe/ThreatGlobe").then((m) => ({ default: m.ThreatGlobe }))
+);
 
 const STORAGE_KEY = "phishguard_history";
 function loadHistory(): PredictionRecord[] {
@@ -52,6 +61,9 @@ export function LinkPredictor({ initialUrl = "" }: { initialUrl?: string }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const terminalRef = useRef<HTMLDivElement>(null);
 
+  const { startScan, completeScan } = useScanContext();
+  const { recordScan } = useGamification();
+
   useEffect(() => {
     if (terminalRef.current) terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
   }, [terminalLogs]);
@@ -88,6 +100,7 @@ export function LinkPredictor({ initialUrl = "" }: { initialUrl?: string }) {
     setPulseKey((k) => k + 1);
     setIsAnalyzing(true); setProgress(0); setLabel(null); setAccuracy(null);
     setLegitProb(null); setDisplayLegit(100); setTerminalLogs([]); setShowTerminal(true);
+    startScan(url);
     addLog("Initializing...");
     const iv = setInterval(() => setProgress((p) => p >= 98 ? p : p + 2), 100);
     setTimeout(() => addLog("Encoding URL..."), 600);
@@ -108,6 +121,9 @@ export function LinkPredictor({ initialUrl = "" }: { initialUrl?: string }) {
         addLog(`Result: ${data.label} (${data.confidence.toFixed(1)}%)`);
         const record: PredictionRecord = { url, label: data.label, confidence: data.confidence, timestamp: Date.now() };
         const updated = [record, ...history]; setHistory(updated); saveHistory(updated);
+        completeScan({ label: data.label, confidence: data.confidence, legitimateChance: data.legitimate_chance, timestamp: Date.now() });
+        recordScan({ label: data.label, confidence: data.confidence });
+        speakVerdict(data.label, data.confidence);
         let cur = 100;
         const barIv = setInterval(() => {
           cur -= 1; setDisplayLegit(cur);
@@ -188,6 +204,8 @@ export function LinkPredictor({ initialUrl = "" }: { initialUrl?: string }) {
                 <button onClick={handlePaste} style={btnIcon}><ClipboardPaste style={{ width: 16, height: 16 }} /></button>
                 <button onClick={handleCopyUrl} style={btnIcon}><Copy style={{ width: 16, height: 16 }} /></button>
               </div>
+              <div style={{ marginBottom: 10 }}>
+                <VoiceButton onUrlDetected={(u) => setUrl(u)} />
               {inputFocused && (
                 <div style={{
                   position: "absolute",
@@ -357,6 +375,10 @@ export function LinkPredictor({ initialUrl = "" }: { initialUrl?: string }) {
                     <button onClick={handleCopyUrl} style={{ ...btnSec, flex: 1, justifyContent: "center" }}><Copy style={{ width: 13, height: 13 }} />&nbsp;Copy URL</button>
                     {!isPhishing && <a href={url.startsWith("http") ? url : `https://${url}`} target="_blank" rel="noopener noreferrer" style={{ ...btnSec, flex: 1, justifyContent: "center" }}><ExternalLink style={{ width: 13, height: 13 }} />&nbsp;Open URL</a>}
                   </div>
+                  <div style={{ marginTop: 16, display: "flex", justifyContent: "center" }}>
+                    <ThreatMeter confidence={accuracy} label={label} />
+                  </div>
+                  <NeuralNetModal url={url} label={label} confidence={accuracy} />
                 </motion.div>
               )}
             </AnimatePresence>
@@ -370,6 +392,13 @@ export function LinkPredictor({ initialUrl = "" }: { initialUrl?: string }) {
       </div>
 
       <ToastNotification message={toast} onDone={() => setToast(null)} />
+
+      {/* ThreatGlobe — lazy loaded */}
+      <div style={{ marginTop: 32 }}>
+        <Suspense fallback={<div style={{ height: 400, display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(0,255,157,0.3)", fontFamily: "monospace", fontSize: 12 }}>Loading Globe...</div>}>
+          <ThreatGlobe />
+        </Suspense>
+      </div>
     </div>
   );
 }
