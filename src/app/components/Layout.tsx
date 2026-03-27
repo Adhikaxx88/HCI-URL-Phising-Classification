@@ -155,10 +155,10 @@ export function Layout() {
         <AnimatePresence mode="wait">
           <motion.div
             key={location.pathname}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.22 }}
+            initial={{ opacity: 0, x: -4, skewX: 2, filter: "blur(2px)" }}
+            animate={{ opacity: 1, x: 0, skewX: 0, filter: "blur(0px)" }}
+            exit={{ opacity: 0, x: 4, skewX: -2, filter: "blur(2px)" }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
             style={{ maxWidth: 1400, margin: "0 auto" }}
           >
             <Outlet />
