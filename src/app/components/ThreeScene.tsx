@@ -1,11 +1,23 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
+import { useTheme } from "../context/ThemeContext";
 
 export function ThreeScene() {
   const mountRef = useRef<HTMLDivElement>(null);
   const targetRotation = useRef({ x: 0, y: 0 });
   const mouseNDC = useRef({ x: 0, y: 0 });
   const webglFailed = useRef(false);
+  const materialsRef = useRef<{ mat: THREE.MeshBasicMaterial; dotMat: THREE.PointsMaterial; ringMat: THREE.MeshBasicMaterial } | null>(null);
+
+  const { threeAccentColor } = useTheme();
+
+  // Update material colors when theme changes
+  useEffect(() => {
+    if (!materialsRef.current) return;
+    const color = new THREE.Color(threeAccentColor);
+    materialsRef.current.mat.color = color;
+    materialsRef.current.dotMat.color = color;
+  }, [threeAccentColor]);
 
   useEffect(() => {
     const mount = mountRef.current;
@@ -85,6 +97,9 @@ export function ThreeScene() {
     });
     const dots = new THREE.Points(dotGeo, dotMat);
     scene.add(dots);
+
+    // Store material refs for theme updates
+    materialsRef.current = { mat, dotMat, ringMat };
 
     // ── Clock for ring pulse ──
     const clock = new THREE.Clock();
