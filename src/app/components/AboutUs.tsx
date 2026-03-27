@@ -1,7 +1,17 @@
 import { Target, Zap, Shield, TrendingUp, Github as GithubIcon } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
 import { GlitchText } from "./GlitchText";
 import { NeonSeparator } from "./NeonSeparator";
 import { CollaboratorCard } from "./CollaboratorCard";
+
+const staggerContainer = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.1 } },
+};
+const fadeUp = {
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.25 } },
+};
 
 const features = [
   {
@@ -31,6 +41,7 @@ const features = [
 ];
 
 export function AboutUs() {
+  const shouldReduceMotion = useReducedMotion();
   return (
     <div
       style={{
@@ -205,43 +216,26 @@ export function AboutUs() {
             <NeonSeparator label="CORE COLLABORATORS" />
 
             {/* Collaborator cards */}
-            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-              <CollaboratorCard
-                name="Nehemiah Gantenk Abiez"
-                role="Nehemiah Wilhelmus Junaidi 2802409874"
-                description="Frontend Developer - Crafted the sleek UI and seamless user experience of our phishing detection system, making security accessible to all."
-              />
-              <CollaboratorCard
-                name="Adhikaxx88"
-                role="Adhika Gunawan 2802438205"
-                description="Backend Developer and AI Engineer - Developed the core deep learning model and backend infrastructure that powers our real-time phishing detection system, ensuring fast and accurate analysis of URLs."
-              />
-              <CollaboratorCard
-                name="Alvin"
-                role="Alvin Wijaya 2802393062"
-                description="UI/UX Designer - Designed the intuitive and visually striking interface for our phishing detection system, creating a user-friendly experience that makes online security accessible to everyone."
-              />
-              <CollaboratorCard
-                name="Felix"
-                role="Felix Yung 2802394462"
-                description="Frontend Developer - Implemented the responsive and engaging user interface for our phishing detection system, ensuring a seamless experience across devices while maintaining a strong focus on usability and aesthetics."
-              />
-              <CollaboratorCard
-                name="Daniel"
-                role="Daniel Sebastian Winata 2802392652"
-                description="UI/UX Designer - Crafted the user interface and experience for our phishing detection system, focusing on creating an intuitive and visually appealing design that empowers users to stay safe online with ease."
-              />
-              <CollaboratorCard
-                name="Andrewyungg"
-                role="Andrew Yung 2802394424"
-                description="Frontend Developer - Developed the dynamic and user-friendly interface for our phishing detection system, ensuring that users can easily navigate and utilize the tool to protect themselves from online threats."
-              />
-              <CollaboratorCard
-                name="Tokesi"
-                role="Tokesi Lukynawa 2802394525"
-                description="UI/UX Designer - Designed the user interface and experience for our phishing detection system, creating an intuitive and visually appealing design that empowers users to stay safe online with ease."
-              />
-            </div>
+            <motion.div
+              variants={shouldReduceMotion ? undefined : staggerContainer}
+              initial="hidden"
+              animate="show"
+              style={{ display: "flex", flexDirection: "column", gap: 16 }}
+            >
+              {[
+                { name: "Nehemiah Gantenk Abiez", role: "Nehemiah Wilhelmus Junaidi 2802409874", description: "Frontend Developer - Crafted the sleek UI and seamless user experience of our phishing detection system, making security accessible to all." },
+                { name: "Adhikaxx88", role: "Adhika Gunawan 2802438205", description: "Backend Developer and AI Engineer - Developed the core deep learning model and backend infrastructure that powers our real-time phishing detection system, ensuring fast and accurate analysis of URLs." },
+                { name: "Alvin", role: "Alvin Wijaya 2802393062", description: "UI/UX Designer - Designed the intuitive and visually striking interface for our phishing detection system, creating a user-friendly experience that makes online security accessible to everyone." },
+                { name: "Felix", role: "Felix Yung 2802394462", description: "Frontend Developer - Implemented the responsive and engaging user interface for our phishing detection system, ensuring a seamless experience across devices while maintaining a strong focus on usability and aesthetics." },
+                { name: "Daniel", role: "Daniel Sebastian Winata 2802392652", description: "UI/UX Designer - Crafted the user interface and experience for our phishing detection system, focusing on creating an intuitive and visually appealing design that empowers users to stay safe online with ease." },
+                { name: "Andrewyungg", role: "Andrew Yung 2802394424", description: "Frontend Developer - Developed the dynamic and user-friendly interface for our phishing detection system, ensuring that users can easily navigate and utilize the tool to protect themselves from online threats." },
+                { name: "Tokesi", role: "Tokesi Lukynawa 2802394525", description: "UI/UX Designer - Designed the user interface and experience for our phishing detection system, creating an intuitive and visually appealing design that empowers users to stay safe online with ease." },
+              ].map((c) => (
+                <motion.div key={c.name} variants={shouldReduceMotion ? undefined : fadeUp}>
+                  <CollaboratorCard name={c.name} role={c.role} description={c.description} />
+                </motion.div>
+              ))}
+            </motion.div>
 
             {/* View GitHub button */}
             <button
