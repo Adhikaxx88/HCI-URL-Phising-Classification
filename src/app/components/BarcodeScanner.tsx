@@ -1,6 +1,6 @@
-import { useState, useRef } from 'react';
-import { Html5QrcodeScanner, Html5Qrcode } from 'html5-qrcode';
-import { Camera, Upload, X } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { Html5Qrcode } from 'html5-qrcode';
+import { Camera, Upload, X, AlertCircle } from 'lucide-react';
 
 interface BarcodeScannerProps {
   onScanSuccess: (url: string) => void;
@@ -9,50 +9,66 @@ interface BarcodeScannerProps {
 export function BarcodeScanner({ onScanSuccess }: BarcodeScannerProps) {
   const [isScanning, setIsScanning] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const scannerRef = useRef<Html5QrcodeScanner | null>(null);
+  const scannerRef = useRef<Html5Qrcode | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const scannerContainerRef = useRef<HTMLDivElement>(null);
 
-  const startCameraScanning = () => {
+  // Fungsi untuk mematikan kamera dengan bersih
+  const stopScanning = async () => {
+    if (scannerRef.current && scannerRef.current.isScanning) {
+      try {
+        await scannerRef.current.stop();
+        scannerRef.current = null;
+      } catch (err) {
+        console.error("Gagal stop scanner:", err);
+      }
+    }
+    setIsScanning(false);
+  };
+
+  // Cleanup otomatis pas ganti halaman/component unmount
+  useEffect(() => {
+    return () => {
+      stopScanning();
+    };
+  }, []);
+
+  const startCameraScanning = async () => {
     setError(null);
     setIsScanning(true);
 
-    // Clean up any existing scanner
-    if (scannerRef.current) {
-      scannerRef.current.clear();
-    }
+    // Tunggu sebentar sampai div 'qr-reader' beneran muncul di DOM
+    setTimeout(async () => {
+      try {
+        const scanner = new Html5Qrcode("qr-reader");
+        scannerRef.current = scanner;
 
-    setTimeout(() => {
-      if (scannerContainerRef.current) {
-        scannerRef.current = new Html5QrcodeScanner(
-          "qr-reader",
-          { 
-            fps: 10, 
-            qrbox: { width: 250, height: 250 },
-            supportedScanTypes: []
-          },
-          false
-        );
+        const config = {
+          fps: 10,
+          qrbox: { width: 250, height: 250 },
+        };
 
-        scannerRef.current.render(
+        // Langsung tembak kamera belakang (environment) atau kamera utama
+        await scanner.start(
+          { facingMode: "environment" },
+          config,
           (decodedText) => {
             onScanSuccess(decodedText);
             stopScanning();
           },
-          (errorMessage) => {
-            // Ignore errors during scanning
+          () => {
+            // Callback pas lagi nyari kode (di-ignore biar gak menuhin console)
           }
         );
+      } catch (err: any) {
+        setIsScanning(false);
+        if (err.toString().includes("NotAllowedError")) {
+          setError("Izin kamera ditolak. Klik ikon gembok/pengaturan di URL bar dan pilih 'Allow' Camera.");
+        } else {
+          setError("Kamera tidak ditemukan atau sedang dipakai aplikasi lain (Zoom/Meet). Cek Fn+F6 di MSI lu.");
+        }
+        console.error("Scan error:", err);
       }
-    }, 100);
-  };
-
-  const stopScanning = () => {
-    if (scannerRef.current) {
-      scannerRef.current.clear();
-      scannerRef.current = null;
-    }
-    setIsScanning(false);
+    }, 300);
   };
 
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -60,47 +76,38 @@ export function BarcodeScanner({ onScanSuccess }: BarcodeScannerProps) {
     if (!file) return;
 
     setError(null);
+    const html5QrCode = new Html5Qrcode("qr-file-reader");
     
     try {
-      const html5QrCode = new Html5Qrcode("qr-file-reader");
       const result = await html5QrCode.scanFile(file, true);
       onScanSuccess(result);
-      
-      // Clean up
-      html5QrCode.clear();
     } catch (err) {
-      setError('Could not detect barcode/QR code in the image. Please try another image.');
-      console.error('Scan error:', err);
-    }
-
-    // Reset file input
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+      setError('QR/Barcode tidak terdeteksi di gambar ini. Coba foto yang lebih jelas.');
+    } finally {
+      if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-2xl">
-      {/* Header */}
+    <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-2xl border border-gray-100">
       <div className="text-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Barcode/QR Scanner</h2>
-        <p className="text-gray-600">Scan or upload a barcode/QR code to extract the link</p>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Phishing Link Scanner</h2>
+        <p className="text-gray-600">Scan QR Code atau Barcode untuk cek keamanan link</p>
       </div>
 
-      {/* Action Buttons */}
-      {!isScanning && (
+      {!isScanning ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
           <button
             onClick={startCameraScanning}
-            className="flex items-center justify-center gap-3 px-6 py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition"
+            className="flex items-center justify-center gap-3 px-6 py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition-all shadow-lg active:scale-95"
           >
             <Camera className="w-5 h-5" />
-            Scan with Camera
+            Scan via Kamera
           </button>
           
-          <label className="flex items-center justify-center gap-3 px-6 py-4 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition cursor-pointer">
+          <label className="flex items-center justify-center gap-3 px-6 py-4 bg-gray-50 hover:bg-gray-100 text-gray-700 border-2 border-dashed border-gray-300 rounded-xl font-semibold transition-all cursor-pointer">
             <Upload className="w-5 h-5" />
-            Upload Image
+            Upload Gambar
             <input
               ref={fileInputRef}
               type="file"
@@ -110,44 +117,39 @@ export function BarcodeScanner({ onScanSuccess }: BarcodeScannerProps) {
             />
           </label>
         </div>
-      )}
-
-      {/* Scanner Container */}
-      {isScanning && (
-        <div className="mb-6">
+      ) : (
+        <div className="mb-6 animate-in fade-in zoom-in duration-300">
           <div className="flex justify-between items-center mb-4">
-            <p className="text-sm text-gray-600">Position the barcode/QR code in the frame</p>
+            <p className="text-sm font-medium text-indigo-600 animate-pulse">Kamera Aktif: Arahkan ke Kode...</p>
             <button
               onClick={stopScanning}
-              className="flex items-center gap-2 px-3 py-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg text-sm font-medium transition"
+              className="flex items-center gap-2 px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-sm font-bold transition-colors"
             >
               <X className="w-4 h-4" />
-              Stop
+              Batal
             </button>
           </div>
           <div 
             id="qr-reader" 
-            ref={scannerContainerRef}
-            className="rounded-lg overflow-hidden"
+            className="rounded-xl overflow-hidden border-4 border-indigo-100 bg-black aspect-square sm:aspect-video"
           ></div>
         </div>
       )}
 
-      {/* Hidden element for file scanning */}
+      {/* Hidden element buat processing file */}
       <div id="qr-file-reader" className="hidden"></div>
 
-      {/* Error Message */}
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
-          <p className="text-sm text-red-700">{error}</p>
+        <div className="bg-red-50 border-l-4 border-red-500 rounded-lg p-4 mb-6 flex gap-3 items-start">
+          <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
+          <p className="text-sm text-red-800 font-medium">{error}</p>
         </div>
       )}
 
-      {/* Info */}
-      <div className="bg-blue-50 rounded-lg p-4">
-        <p className="text-sm text-blue-700">
-          <strong>Tip:</strong> This scanner supports both QR codes and various barcode formats. 
-          Make sure the code is clear and well-lit for best results.
+      <div className="bg-indigo-50 rounded-xl p-4 border border-indigo-100">
+        <p className="text-xs text-indigo-800 leading-relaxed">
+          <strong>Pro Tip:</strong> Pastikan kode berada di dalam kotak tengah dan pencahayaan cukup. 
+          Kamera MSI Katana butuh jarak sekitar 15-20cm agar fokus maksimal.
         </p>
       </div>
     </div>
