@@ -116,12 +116,60 @@ export function LinkPredictor({ initialUrl = "" }: { initialUrl?: string }) {
   };
 
   const startCameraScanning = async () => {
-    setScanError(null); setIsScanning(true); addLog("Starting camera...");
+    setScanError(null);
+    setIsScanning(true);
+    addLog("Starting camera...");
+
     try {
-      const qr = new Html5Qrcode("qr-reader"); html5QrCodeRef.current = qr;
-      await qr.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 },
-        (decoded) => { setUrl(decoded); addLog(`QR: ${decoded}`); stopScanning(); }, () => {});
-    } catch { setScanError("Camera error"); setIsScanning(false); }
+      // Get available cameras
+      const cameras = await Html5Qrcode.getCameras();
+
+      if (!cameras || cameras.length === 0) {
+        setScanError("No camera found");
+        setIsScanning(false);
+        return;
+      }
+
+      // Prefer back camera if available
+      const backCamera =
+        cameras.find((camera) =>
+          camera.label.toLowerCase().includes("back")
+        ) || cameras[0];
+
+      addLog(`Using camera: ${backCamera.label}`);
+
+      // Create scanner
+      const qr = new Html5Qrcode("qr-reader");
+      html5QrCodeRef.current = qr;
+
+      // Start scanner
+      await qr.start(
+        backCamera.id,
+        {
+          fps: 10,
+          qrbox: { width: 250, height: 250 },
+          aspectRatio: 1.0,
+        },
+        (decodedText) => {
+          addLog(`QR detected: ${decodedText}`);
+          setUrl(decodedText);
+
+          stopScanning();
+        },
+        (errorMessage) => {
+          // Ignore scan errors continuously
+          // console.log(errorMessage);
+        }
+      );
+    } catch (err) {
+      console.error(err);
+
+      setScanError(
+        err?.message || "Unable to access camera"
+      );
+
+      setIsScanning(false);
+    }
   };
 
   const stopScanning = async () => {
