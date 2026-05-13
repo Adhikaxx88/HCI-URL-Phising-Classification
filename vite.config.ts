@@ -12,11 +12,17 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      // Alias @ to the src directory
       '@': path.resolve(__dirname, './src'),
     },
   },
-
-  // File types to support raw imports. Never add .css, .tsx, or .ts files to this.
   assetsInclude: ['**/*.svg', '**/*.csv'],
+  server: {
+    // Required on Windows + Docker: inotify events don't cross the WSL2 boundary,
+    // so Vite must poll the filesystem to detect changes.
+    watch: {
+      usePolling: true,
+      interval: 500,
+    },
+    host: true,
+  },
 })

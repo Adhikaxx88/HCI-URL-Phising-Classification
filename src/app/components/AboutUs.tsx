@@ -245,7 +245,7 @@ export function AboutUs() {
 
             {/* View GitHub button */}
             <button
-              onClick={() => window.open("https://github.com", "_blank")}
+              onClick={() => window.open("https://github.com/Adhikaxx88/hci-url-phising-classification", "_blank")}
               style={{
                 width: "100%",
                 padding: "12px",
