@@ -10,29 +10,45 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from sentence_transformers import SentenceTransformer
 
-
-
-
+# ── Google credentials bootstrap ─────────────────────────────────────────────
+# On cloud hosts (Vercel / HF Space) the JSON key is stored as an env var.
+# Write it to /tmp (always writable) and point the SDK at it.
+# On local Docker the file is bind-mounted and GOOGLE_APPLICATION_CREDENTIALS
+# is already set in docker-compose — don't overwrite it in that case.
 if "GOOGLE_SETTINGS" in os.environ:
-    with open("google_key.json", "w") as f:
-        f.write(os.environ["GOOGLE_SETTINGS"])
+    _creds_path = "/tmp/google_key.json"
+    with open(_creds_path, "w") as _f:
+        _f.write(os.environ["GOOGLE_SETTINGS"])
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = _creds_path
+    print(f" Google credentials written to {_creds_path}")
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "google_key.json"
+# ── CORS ──────────────────────────────────────────────────────────────────────
+# Set ALLOWED_ORIGIN in your deployment env to restrict origins.
+# e.g. ALLOWED_ORIGIN=https://your-app.vercel.app
+# Leave unset to allow all origins (fine for dev / HF Space).
+_raw_origin = os.environ.get("ALLOWED_ORIGIN", "")
+_allowed_origins: list[str] = (
+    [o.strip() for o in _raw_origin.split(",") if o.strip()]
+    if _raw_origin
+    else ["*"]
+)
 
 app = FastAPI(title="Phishing Detection API v3.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=_allowed_origins,
+    allow_credentials=False,   # must be False when allow_origins contains "*"
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+
 class URLRequest(BaseModel):
     url: str
 
-# --- LOAD COMPONENTS ---
+
+# ── Load model + processor ────────────────────────────────────────────────────
 print(" Memuat Model (.h5) dan Sentence Transformer...")
 
 MODEL_PATH = 'models/phishing_detection_deeplearning.h5'
@@ -56,7 +72,6 @@ except Exception as e:
 
 
 def _get_gcp_project_id() -> str:
-    """Read project_id from the service-account JSON so we don't hardcode it."""
     creds_path = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS", "")
     if creds_path and os.path.exists(creds_path):
         try:
@@ -68,7 +83,6 @@ def _get_gcp_project_id() -> str:
 
 
 def _submit_to_webrisk(url: str) -> None:
-    """Blocking call to Google Web Risk Submission API via service account."""
     from google.cloud import webrisk_v1
 
     project_id = _get_gcp_project_id()
@@ -118,7 +132,6 @@ def predict(request: URLRequest):
 
 @app.post("/report")
 async def report_to_google(request: URLRequest):
-    """Submit a URL to Google Web Risk via service-account credentials."""
     creds_path = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS", "")
     if not creds_path or not os.path.exists(creds_path):
         raise HTTPException(
@@ -127,7 +140,6 @@ async def report_to_google(request: URLRequest):
         )
 
     try:
-        # google-cloud-webrisk client is synchronous — run in thread pool
         loop = asyncio.get_event_loop()
         await loop.run_in_executor(None, _submit_to_webrisk, request.url)
         return {"success": True, "message": "URL berhasil dilaporkan ke Google."}

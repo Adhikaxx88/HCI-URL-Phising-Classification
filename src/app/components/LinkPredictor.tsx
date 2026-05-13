@@ -8,7 +8,7 @@ import { StatisticWidget, type PredictionRecord } from "./StatisticWidget";
 import { ToastNotification } from "./ToastNotification";
 import { useLanguage } from "../context/LanguageContext";
 
-const API_BASE = import.meta.env.VITE_API_URL ?? "https://adhikaxx88-phishing-detection-api.hf.space";
+const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
 
 const STORAGE_KEY = "phishguard_history";
 function loadHistory(): PredictionRecord[] {

@@ -5,7 +5,8 @@
       "Bash(npm run *)",
       "Bash(docker compose *)",
       "Bash(docker volume *)",
-      "Bash(node -e ' *)"
+      "Bash(node -e ' *)",
+      "Bash(grep -v \"^$\\\\|chunk\\\\|gzip\\\\|dist/\\\\|consider\\\\|rollup\\\\|adjust\\\\|minif\")"
     ]
   }
 }
