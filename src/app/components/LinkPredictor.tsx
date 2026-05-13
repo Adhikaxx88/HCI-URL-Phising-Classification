@@ -123,15 +123,6 @@ export function LinkPredictor({ initialUrl = "" }: { initialUrl?: string }) {
     }
   };
 
-
-  const startCameraScanning = async () => {
-    setScanError(null); setIsScanning(true); addLog("Starting camera...");
-    try {
-      const qr = new Html5Qrcode("qr-reader"); html5QrCodeRef.current = qr;
-      await qr.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 },
-        (decoded) => { setUrl(decoded); addLog(`QR: ${decoded}`); stopScanning(); }, () => {});
-    } catch { setScanError("Camera error"); setIsScanning(false); }
-
   const handleReportToGoogle = async () => {
     if (!url.trim()) return;
     setIsReporting(true);
@@ -173,7 +164,6 @@ export function LinkPredictor({ initialUrl = "" }: { initialUrl?: string }) {
       const message = err instanceof Error ? err.message : "Unable to access camera";
       setScanError(message); setIsScanning(false);
     }
-
   };
 
   const stopScanning = async () => {

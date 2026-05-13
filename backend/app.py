@@ -10,6 +10,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from sentence_transformers import SentenceTransformer
 
+
+
+
+if "GOOGLE_SETTINGS" in os.environ:
+    with open("google_key.json", "w") as f:
+        f.write(os.environ["GOOGLE_SETTINGS"])
+
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "google_key.json"
+
 app = FastAPI(title="Phishing Detection API v3.0")
 
 app.add_middleware(
