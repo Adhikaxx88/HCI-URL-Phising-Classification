@@ -52,7 +52,6 @@ export function LinkPredictor({ initialUrl = "" }: { initialUrl?: string }) {
   const [btnSuccess, setBtnSuccess] = useState(false);
   const [btnHovered, setBtnHovered] = useState(false);
   const [pulseKey, setPulseKey] = useState(0);
-  const [isReporting, setIsReporting] = useState(false);
   const shouldReduceMotion = useReducedMotion();
   const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -123,26 +122,12 @@ export function LinkPredictor({ initialUrl = "" }: { initialUrl?: string }) {
     }
   };
 
-  const handleReportToGoogle = async () => {
+  const handleReportToGoogle = () => {
     if (!url.trim()) return;
-    setIsReporting(true);
-    addLog("Reporting URL to Google...");
-    try {
-      const res = await fetch(`${API_BASE}/report`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url }),
-      });
-      if (!res.ok) throw new Error("Report failed");
-      addLog("URL reported to Google successfully.");
-      setToast(t("reportSuccess"));
-    } catch (err) {
-      addLog("ERROR: could not report URL");
-      setToast("Report failed — try again.");
-      console.error(err);
-    } finally {
-      setIsReporting(false);
-    }
+    const reportUrl = `https://safebrowsing.google.com/safebrowsing/report_phish/?url=${encodeURIComponent(url)}`;
+    window.open(reportUrl, "_blank", "noopener,noreferrer");
+    addLog("Opened Google Safe Browsing report page.");
+    setToast(t("reportSuccess"));
   };
 
   const startCameraScanning = async () => {
@@ -189,11 +174,11 @@ export function LinkPredictor({ initialUrl = "" }: { initialUrl?: string }) {
   const btnIcon: React.CSSProperties = { padding: "10px 12px", borderRadius: 8, background: "rgba(0,255,157,0.07)", border: "1px solid rgba(0,255,157,0.22)", color: "#00ff9d", cursor: "pointer", display: "flex", alignItems: "center" };
   const btnReport: React.CSSProperties = {
     padding: "9px 16px", borderRadius: 8,
-    background: isReporting ? "rgba(255,59,59,0.04)" : "rgba(255,165,0,0.08)",
-    border: isReporting ? "1px solid rgba(255,59,59,0.2)" : "1px solid rgba(255,165,0,0.35)",
-    color: isReporting ? "rgba(255,59,59,0.6)" : "#ffa500",
-    fontSize: 12, cursor: isReporting ? "not-allowed" : "pointer",
-    display: "flex", alignItems: "center", gap: 6, opacity: isReporting ? 0.7 : 1,
+    background: "rgba(255,165,0,0.08)",
+    border: "1px solid rgba(255,165,0,0.35)",
+    color: "#ffa500",
+    fontSize: 12, cursor: "pointer",
+    display: "flex", alignItems: "center", gap: 6,
     transition: "all 0.2s",
   };
 
@@ -412,9 +397,9 @@ export function LinkPredictor({ initialUrl = "" }: { initialUrl?: string }) {
                       </a>
                     )}
                     {/* Report to Google — always shown after result */}
-                    <button onClick={handleReportToGoogle} disabled={isReporting} style={{ ...btnReport, flex: "1 1 100%" }}>
+                    <button onClick={handleReportToGoogle} style={{ ...btnReport, flex: "1 1 100%" }}>
                       <Flag style={{ width: 13, height: 13 }} />
-                      {isReporting ? t("reporting") : t("reportToGoogle")}
+                      {t("reportToGoogle")}
                     </button>
                   </div>
                 </motion.div>
